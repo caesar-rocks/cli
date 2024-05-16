@@ -13,7 +13,7 @@ var devCmd = &cobra.Command{
 }
 
 func runDevServer(cmd *cobra.Command, args []string) {
-	util.Exec("task", "air", "css", "templ")
+	util.Exec("air")
 }
 
 func init() {
