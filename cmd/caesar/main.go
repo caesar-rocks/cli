@@ -14,6 +14,10 @@ func main() {
 		Title: "General Commands",
 	})
 	rootCmd.AddGroup(&cobra.Group{
+		ID:    "list",
+		Title: "Make Commands",
+	})
+	rootCmd.AddGroup(&cobra.Group{
 		ID:    "make",
 		Title: "Make Commands",
 	})
