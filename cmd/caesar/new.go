@@ -15,6 +15,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	STARTER_KIT_GITHUB_REPO = "https://github.com/caesar-rocks/starter-kit.git"
+)
+
 var (
 	appName      string
 	appNameSnake string
@@ -71,7 +75,7 @@ func setupApp() {
 
 	// Clone the starter kit repository
 	_, err := git.PlainClone("./"+appNameSnake, false, &git.CloneOptions{
-		URL:      "https://github.com/caesar-rocks/starter-kit.git",
+		URL:      STARTER_KIT_GITHUB_REPO,
 		Progress: &util.Discard{},
 		Depth:    1,
 	})

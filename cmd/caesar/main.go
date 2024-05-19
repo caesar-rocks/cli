@@ -25,6 +25,10 @@ func main() {
 		ID:    "migrations",
 		Title: "Migration Commands",
 	})
+	rootCmd.AddGroup(&cobra.Group{
+		ID:    "ui",
+		Title: "UI Commands",
+	})
 	err := rootCmd.Execute()
 	if err != nil {
 		panic(err)
