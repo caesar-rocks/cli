@@ -18,49 +18,38 @@ var makeMigrationCmd = &cobra.Command{
 		var (
 			migrationName            string
 			migrationNameInSnakeCase string
-			tableName                string
 		)
-		huh.NewInput().Title("How is your migration named?").Value(&migrationName).Run()
-		huh.NewInput().Title("What is the name of the table you want to make changes to?").Value(&tableName).Run()
+
+		if len(args) > 0 {
+			migrationName = args[0]
+		} else {
+			huh.NewInput().Title("How is your migration named?").Value(&migrationName).Run()
+		}
+
 		migrationNameInSnakeCase = camelToSnake(migrationName)
 
 		timestamp := time.Now().Unix()
 
 		migrationFileContents := fmt.Sprintf(`package migrations
 
-import ormMigrations "caesar/orm/migrations"
+import (
+	"context"
 
-func %sMigrationUp_%d(schema *ormMigrations.Schema) {
-	schema.CreateTable("%s", func(t *ormMigrations.Table) {
-		// Add your table columns here.
-	})		
+	"github.com/uptrace/bun"
+)
+
+func %sMigrationUp_%d(ctx context.Context, db *bun.DB) error {
+	return nil
 }
 
-func %sMigrationDown_%d(schema *ormMigrations.Schema) {
-	schema.DropTable("%s")
+func %sMigrationDown_%d(ctx context.Context, db *bun.DB) error {
+	return nil
 }
 
 func init() {
-	MigrationsStore.AddMigration(
-		"%d_%s", 
-		%sMigrationUp_%d, 
-		%sMigrationDown_%d,
-	)
+	Migrations.MustRegister(%sMigrationUp_%d, %sMigrationDown_%d)
 }
-`,
-			migrationNameInSnakeCase,
-			timestamp,
-			tableName,
-			migrationNameInSnakeCase,
-			timestamp,
-			tableName,
-			timestamp,
-			migrationNameInSnakeCase,
-			migrationNameInSnakeCase,
-			timestamp,
-			migrationNameInSnakeCase,
-			timestamp,
-		)
+`, migrationName, timestamp, migrationName, timestamp, migrationName, timestamp, migrationName, timestamp)
 
 		path := fmt.Sprintf("./database/migrations/%d_%s.go", timestamp, migrationNameInSnakeCase)
 

@@ -6,15 +6,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var migrateCmd = &cobra.Command{
-	Use:     "migrations:migrate",
+var runCmd = &cobra.Command{
+	Use:     "migrations:run",
 	Short:   "Run all pending migrations",
 	GroupID: "migrations",
 	Run: func(cmd *cobra.Command, args []string) {
-		util.Exec("go", "run", ".", "migrations:migrate")
+		util.Exec("go", "run", ".", "migrations:run")
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(migrateCmd)
+	rootCmd.AddCommand(runCmd)
 }
