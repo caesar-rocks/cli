@@ -50,11 +50,15 @@ var makeControllerCmd = &cobra.Command{
 			subfolders = inputSnakeParts[:len(inputSnakeParts)-1]
 
 			packageName = strings.Join(inputSnakeParts[:len(inputSnakeParts)-1], "_")
+
+			controllerFilePath = fmt.Sprintf("app/controllers/%s/%s_controller.go", strings.Join(subfolders, "/"), controllerNameSnake)
+		} else {
+			controllerNameSnake = inputSnake
+
+			controllerFilePath = fmt.Sprintf("app/controllers/%s_controller.go", controllerNameSnake)
 		}
 
 		controllerNameUpperCamel = util.ConvertToUpperCamelCase(controllerNameSnake)
-
-		controllerFilePath = fmt.Sprintf("app/controllers/%s/%s_controller.go", strings.Join(subfolders, "/"), controllerNameSnake)
 
 		createControllerFile(packageName)
 		registerController(packageName)
@@ -70,7 +74,7 @@ func createControllerFile(packageName string) {
 // Uncomment the following import statement once you implement your first controller method.
 // import (
 // 	caesar "github.com/caesar-rocks/core"
-// )		
+// )
 
 type ApplicationsController struct {
 	// Define dependencies here
