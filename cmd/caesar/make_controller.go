@@ -126,10 +126,17 @@ func registerController(packageName string) {
 		packageName += "Controllers"
 	}
 
+	// Add import statement
 	if packageName == "controllers" {
-		contents = strings.ReplaceAll(contents, "import (", "import (\n\t\""+packagePath+"\"")
+		alreadyImported := strings.Contains(contents, "\""+packagePath+"\"")
+		if !alreadyImported {
+			contents = strings.ReplaceAll(contents, "import (", "import (\n\t\""+packagePath+"\"")
+		}
 	} else {
-		contents = strings.ReplaceAll(contents, "import (", "import (\n\t"+packageName+" \""+packagePath+"\"")
+		alreadyImported := strings.Contains(contents, packageName+" \""+packagePath+"\"")
+		if !alreadyImported {
+			contents = strings.ReplaceAll(contents, "import (", "import (\n\t"+packageName+" \""+packagePath+"\"")
+		}
 	}
 
 	// Add controller to app.RegisterProviders
