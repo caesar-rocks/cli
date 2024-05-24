@@ -29,8 +29,7 @@ func main() {
 		ID:    "ui",
 		Title: "UI Commands",
 	})
-	err := rootCmd.Execute()
-	if err != nil {
+	if err := rootCmd.Execute(); err != nil {
 		panic(err)
 	}
 }

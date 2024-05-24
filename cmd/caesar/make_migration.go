@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 	"time"
-	"unicode"
 
+	"github.com/caesar-rocks/cli/util"
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 )
@@ -26,7 +26,7 @@ var makeMigrationCmd = &cobra.Command{
 			huh.NewInput().Title("How is your migration named?").Value(&migrationName).Run()
 		}
 
-		migrationNameInSnakeCase = camelToSnake(migrationName)
+		migrationNameInSnakeCase = util.CamelToSnake(migrationName)
 
 		timestamp := time.Now().Unix()
 
@@ -63,21 +63,4 @@ func init() {
 
 func init() {
 	rootCmd.AddCommand(makeMigrationCmd)
-}
-
-func camelToSnake(s string) string {
-	var result []rune
-
-	for i, r := range s {
-		if unicode.IsUpper(r) {
-			if i > 0 && unicode.IsLower(rune(s[i-1])) {
-				result = append(result, '_')
-			}
-			result = append(result, unicode.ToLower(r))
-		} else {
-			result = append(result, r)
-		}
-	}
-
-	return string(result)
 }

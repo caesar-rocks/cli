@@ -1,20 +1,33 @@
 package main
 
 import (
-	"fmt"
-
+	"github.com/caesar-rocks/cli/internal"
+	"github.com/caesar-rocks/cli/util"
+	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 )
 
-var makeValidationCmd = &cobra.Command{
+var makeValidatorCmd = &cobra.Command{
 	Use:     "make:validator",
 	Short:   "Create a new validator",
 	GroupID: "make",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("make:validator called")
+		input := ""
+
+		if len(args) > 0 {
+			input = args[0]
+		} else {
+			huh.NewInput().Title("How should we name your validator, civis Romanus?").Value(&input).Run()
+		}
+
+		if err := internal.MakeValidator(input); err != nil {
+			util.ExitWithError(err)
+		}
+
+		util.PrintWithPrefix("success", "#00c900", "Validator created successfully.")
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(makeValidationCmd)
+	rootCmd.AddCommand(makeValidatorCmd)
 }

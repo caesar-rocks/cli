@@ -2,6 +2,7 @@ package util
 
 import (
 	"strings"
+	"unicode"
 )
 
 func ConvertToSnakeCase(s string) string {
@@ -34,4 +35,21 @@ func ConvertToUpperCamelCase(s string) string {
 	result = strings.ReplaceAll(result, "_", "")
 
 	return result
+}
+
+func CamelToSnake(s string) string {
+	var result []rune
+
+	for i, r := range s {
+		if unicode.IsUpper(r) {
+			if i > 0 && unicode.IsLower(rune(s[i-1])) {
+				result = append(result, '_')
+			}
+			result = append(result, unicode.ToLower(r))
+		} else {
+			result = append(result, r)
+		}
+	}
+
+	return string(result)
 }

@@ -11,9 +11,8 @@ import (
 )
 
 var (
-	input           string
-	inputUpperCamel string
-	inputSnake      string
+	input      string
+	inputSnake string
 
 	controllerNameUpperCamel string
 	controllerNameSnake      string
@@ -33,7 +32,6 @@ var makeControllerCmd = &cobra.Command{
 		}
 
 		inputSnake = util.ConvertToSnakeCase(input)
-		inputUpperCamel = util.ConvertToUpperCamelCase(inputSnake)
 
 		packageName := "controllers"
 		inputSnakeParts := strings.Split(inputSnake, "/")
