@@ -51,6 +51,8 @@ func SetupApp(appName string, appNameSnake string) error {
 		return err
 	}
 
+	cleanKeepFiles(appNameSnake)
+
 	return nil
 }
 
@@ -91,6 +93,27 @@ func renameGoModuleInGoAndTemplFiles(appNameSnake string) error {
 
 			err = os.WriteFile(path, []byte(newContents), 0)
 			if err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+}
+
+// cleanKeepFiles deletes all .keep files in the app directory
+func cleanKeepFiles(appNameSnake string) {
+	filepath.Walk("./"+appNameSnake, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if info.IsDir() {
+			return nil
+		}
+
+		if strings.HasSuffix(path, ".keep") {
+			if err := os.Remove(path); err != nil {
 				return err
 			}
 		}
