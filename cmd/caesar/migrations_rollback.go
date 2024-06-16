@@ -11,7 +11,7 @@ var rollbackCmd = &cobra.Command{
 	Short:   "Rollback the last migration",
 	GroupID: "migrations",
 	Run: func(cmd *cobra.Command, args []string) {
-		util.Exec("go", "run", ".", "migrations:rollback")
+		util.Exec("go", "run", "./cmd/caesar", "migrations:rollback")
 	},
 }
 

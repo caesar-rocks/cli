@@ -11,7 +11,7 @@ var runCmd = &cobra.Command{
 	Short:   "Run all pending migrations",
 	GroupID: "migrations",
 	Run: func(cmd *cobra.Command, args []string) {
-		util.Exec("go", "run", ".", "migrations:run")
+		util.Exec("go", "run", "./cmd/caesar", "migrations:run")
 	},
 }
 

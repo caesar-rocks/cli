@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/caesar-rocks/cli/internal"
+	"github.com/caesar-rocks/cli/internal/make"
 	"github.com/caesar-rocks/cli/util"
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
@@ -22,7 +22,7 @@ var uiAddCmd = &cobra.Command{
 			huh.NewInput().Title("What is the name of the component you want to add (e.g. \"button\") ?").Value(&componentName).Run()
 		}
 
-		if err := internal.AddUIComponent(componentName); err != nil {
+		if err := make.AddUIComponent(componentName); err != nil {
 			util.ExitWithError(err)
 		}
 

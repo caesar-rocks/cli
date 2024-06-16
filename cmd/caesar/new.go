@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/caesar-rocks/cli/internal"
+	"github.com/caesar-rocks/cli/internal/make"
 	"github.com/caesar-rocks/cli/util"
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/huh/spinner"
@@ -29,7 +29,7 @@ var newCmd = &cobra.Command{
 		err := spinner.New().
 			Title("Setting up your new Caesar application").
 			Action(func() {
-				if err := internal.SetupApp(appName, appNameSnake); err != nil {
+				if err := make.SetupApp(appName, appNameSnake); err != nil {
 					util.ExitAndCleanUp(appNameSnake, err)
 				}
 			}).

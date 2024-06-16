@@ -7,6 +7,7 @@ require (
 	github.com/charmbracelet/huh/spinner v0.0.0-20240508140610-13957916abf0
 	github.com/charmbracelet/lipgloss v0.10.1-0.20240506202754-3ee5dcab73cb
 	github.com/go-git/go-git/v5 v5.12.0
+	github.com/sashabaranov/go-openai v1.25.0
 	github.com/spf13/cobra v1.8.0
 )
 

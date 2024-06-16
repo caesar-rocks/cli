@@ -11,7 +11,7 @@ var resetCmd = &cobra.Command{
 	Short:   "Reset all migrations",
 	GroupID: "migrations",
 	Run: func(cmd *cobra.Command, args []string) {
-		util.Exec("go", "run", ".", "migrations:reset")
+		util.Exec("go", "run", "./cmd/caesar", "migrations:reset")
 	},
 }
 

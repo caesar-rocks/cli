@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/caesar-rocks/cli/internal"
+	"github.com/caesar-rocks/cli/internal/make"
 	"github.com/caesar-rocks/cli/util"
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
@@ -20,7 +20,7 @@ var makeValidatorCmd = &cobra.Command{
 			huh.NewInput().Title("How should we name your validator, civis Romanus?").Value(&input).Run()
 		}
 
-		if err := internal.MakeValidator(input); err != nil {
+		if err := make.MakeValidator(input); err != nil {
 			util.ExitWithError(err)
 		}
 

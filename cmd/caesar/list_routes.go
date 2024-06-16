@@ -10,7 +10,7 @@ var listRoutesCmd = &cobra.Command{
 	Short:   "List all routes of your application",
 	GroupID: "list",
 	Run: func(cmd *cobra.Command, args []string) {
-		util.Exec("go", "run", ".", "list:routes")
+		util.Exec("go", "run", "./cmd/caesar", "list:routes")
 	},
 }
 
