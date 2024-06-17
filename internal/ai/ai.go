@@ -3,7 +3,6 @@ package ai
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"os"
 
 	"github.com/caesar-rocks/cli/internal/ai/tool"
@@ -40,7 +39,7 @@ func (gen *LlmGeneration) Generate(prompt string) error {
 
 	for {
 		resp, err := client.CreateChatCompletion(ctx, openai.ChatCompletionRequest{
-			Model:    openai.GPT4o,
+			Model:    openai.GPT4TurboPreview,
 			Tools:    tools,
 			Messages: gen.dialogue,
 		})
@@ -52,17 +51,35 @@ func (gen *LlmGeneration) Generate(prompt string) error {
 		if msg.FinishReason == openai.FinishReasonStop {
 			break
 		}
+
+		gen.dialogue = append(gen.dialogue, msg.Message)
+
 		if msg.FinishReason == openai.FinishReasonToolCalls {
 			for _, toolCall := range msg.Message.ToolCalls {
 				tool := gen.tools[toolCall.Function.Name]
 				args := make(map[string]any)
 				json.Unmarshal([]byte(toolCall.Function.Arguments), &args)
-				fmt.Println(tool.Invoke(args))
-				break
-			}
+				res, err := tool.Invoke(args)
+				if err != nil {
+					return err
+				}
 
+				var errString string
+				err, ok := res.(error)
+				if ok {
+					errString = "Error: " + err.Error()
+				} else {
+					errString = "No error occurred."
+				}
+
+				gen.dialogue = append(gen.dialogue, openai.ChatCompletionMessage{
+					Role:       openai.ChatMessageRoleTool,
+					Content:    errString,
+					Name:       toolCall.Function.Name,
+					ToolCallID: toolCall.ID,
+				})
+			}
 		}
-		break
 	}
 
 	return nil
