@@ -20,21 +20,21 @@ func MakeMigration(opts MakeMigrationOpts) error {
 	migrationFileContents := fmt.Sprintf(`package migrations
 
 import (
-"context"
+	"context"
 
-"github.com/uptrace/bun"
+	"github.com/uptrace/bun"
 )
 
 func %sMigrationUp_%d(ctx context.Context, db *bun.DB) error {
-return nil
+	return nil
 }
 
 func %sMigrationDown_%d(ctx context.Context, db *bun.DB) error {
-return nil
+	return nil
 }
 
 func init() {
-Migrations.MustRegister(%sMigrationUp_%d, %sMigrationDown_%d)
+	Migrations.MustRegister(%sMigrationUp_%d, %sMigrationDown_%d)
 }
 `, opts.MigrationName, timestamp, opts.MigrationName, timestamp, opts.MigrationName, timestamp, opts.MigrationName, timestamp)
 
