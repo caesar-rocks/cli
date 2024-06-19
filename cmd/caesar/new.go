@@ -24,13 +24,11 @@ var newCmd = &cobra.Command{
 			huh.NewInput().Title("How should we name your app, civis Romanus?").Value(&appName).Run()
 		}
 
-		appNameSnake := util.ConvertToSnakeCase(appName)
-
 		err := spinner.New().
 			Title("Setting up your new Caesar application").
 			Action(func() {
-				if err := make.SetupApp(appName, appNameSnake); err != nil {
-					util.ExitAndCleanUp(appNameSnake, err)
+				if err := make.SetupApp(make.SetupAppOpts{AppName: appName}); err != nil {
+					util.ExitAndCleanUp(util.ConvertToSnakeCase(appName), err)
 				}
 			}).
 			Run()

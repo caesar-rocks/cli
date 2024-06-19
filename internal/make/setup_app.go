@@ -15,7 +15,13 @@ const (
 	STARTER_KIT_GITHUB_REPO = "https://github.com/caesar-rocks/starter-kit.git"
 )
 
-func SetupApp(appName string, appNameSnake string) error {
+type SetupAppOpts struct {
+	AppName string `description:"The name of the app you want to create"`
+}
+
+func SetupApp(opts SetupAppOpts) error {
+	appNameSnake := util.ConvertToSnakeCase(opts.AppName)
+
 	_, err := git.PlainClone("./"+appNameSnake, false, &git.CloneOptions{
 		URL:      STARTER_KIT_GITHUB_REPO,
 		Progress: &util.Discard{},
@@ -25,7 +31,7 @@ func SetupApp(appName string, appNameSnake string) error {
 		return err
 	}
 
-	if err = os.RemoveAll(fmt.Sprintf("./%s/.git", appName)); err != nil {
+	if err = os.RemoveAll(fmt.Sprintf("./%s/.git", opts.AppName)); err != nil {
 		return err
 	}
 
@@ -35,7 +41,7 @@ func SetupApp(appName string, appNameSnake string) error {
 	}
 
 	envFileContents := string(envExampleFile)
-	envFileContents = strings.ReplaceAll(envFileContents, "Caesar App", appName)
+	envFileContents = strings.ReplaceAll(envFileContents, "Caesar App", opts.AppName)
 	envFileContents = strings.ReplaceAll(envFileContents, "<replace_by_app_key>", util.GenerateAppKey())
 
 	if err := os.WriteFile("./"+appNameSnake+"/.env", []byte(envFileContents), 0644); err != nil {

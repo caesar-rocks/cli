@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/caesar-rocks/cli/internal/make"
+	makeTools "github.com/caesar-rocks/cli/internal/make"
 	"github.com/caesar-rocks/cli/util"
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
@@ -19,10 +19,29 @@ var uiAddCmd = &cobra.Command{
 		if len(args) > 0 {
 			componentName = args[0]
 		} else {
-			huh.NewInput().Title("What is the name of the component you want to add (e.g. \"button\") ?").Value(&componentName).Run()
+			uiComponents, err := makeTools.ListRemoteUIComponents()
+			if err == nil {
+				options := make([]huh.Option[string], len(uiComponents))
+				for i, c := range uiComponents {
+					options[i] = huh.NewOption(util.SnakeToCamel(c), c)
+				}
+				huh.NewSelect[string]().
+					Title("What component would you like to add?").
+					Options(options...).
+					Value(&componentName).
+					Run()
+			} else {
+				huh.
+					NewInput().
+					Title("What is the name of the component you want to add (e.g. \"button\") ?").
+					Value(&componentName).
+					Run()
+			}
 		}
 
-		if err := make.AddUIComponent(componentName); err != nil {
+		if err := makeTools.AddUIComponent(makeTools.AddUIComponentOpts{
+			ComponentName: componentName,
+		}); err != nil {
 			util.ExitWithError(err)
 		}
 

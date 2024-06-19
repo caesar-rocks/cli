@@ -53,3 +53,23 @@ func CamelToSnake(s string) string {
 
 	return string(result)
 }
+
+func SnakeToCamel(s string) string {
+	var result []rune
+
+	words := strings.Split(s, "_")
+	for i, word := range words {
+		if i > 0 {
+			result = append(result, ' ')
+		}
+		for j, r := range word {
+			if j == 0 {
+				result = append(result, unicode.ToUpper(r))
+			} else {
+				result = append(result, r)
+			}
+		}
+	}
+
+	return string(result)
+}

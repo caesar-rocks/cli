@@ -19,7 +19,9 @@ var makeMigrationCmd = &cobra.Command{
 			huh.NewInput().Title("How is your migration named?").Value(&migrationName).Run()
 		}
 
-		if err := make.MakeMigration(migrationName); err != nil {
+		if err := make.MakeMigration(make.MakeMigrationOpts{
+			MigrationName: migrationName,
+		}); err != nil {
 			util.PrintWithPrefix("error", "#FF0000", err.Error())
 		}
 	},
