@@ -9,7 +9,8 @@ import (
 )
 
 type MakeControllerOpts struct {
-	Input string `description:"The name of the controller to create"`
+	Input    string `description:"The name of the controller to create"`
+	Resource bool   `description:"Whether or not this controller should be built with base resource"`
 }
 
 func MakeController(opts MakeControllerOpts) error {
@@ -42,7 +43,11 @@ func MakeController(opts MakeControllerOpts) error {
 
 	controllerNameUpperCamel := util.ConvertToUpperCamelCase(controllerNameSnake)
 
-	createControllerFile(packageName, controllerNameUpperCamel, controllerFilePath)
+	if opts.Resource {
+		createResourceFile(packageName, controllerNameUpperCamel, controllerFilePath)
+	} else {
+		createControllerFile(packageName, controllerNameUpperCamel, controllerFilePath)
+	}
 	registerController(packageName, controllerNameUpperCamel)
 
 	util.PrintWithPrefix("success", "#00c900", "Controller created successfully.")
@@ -75,6 +80,147 @@ func NewApplicationsController() *ApplicationsController {
 
 // 	return nil
 // }
+`
+	controllerTemplate = strings.ReplaceAll(controllerTemplate, "Applications", controllerNameUpperCamel)
+	controllerTemplate = strings.ReplaceAll(controllerTemplate, "package controllers", "package "+packageName)
+
+	// Write the contents to the file
+	err := os.WriteFile(controllerFilePath, []byte(controllerTemplate), 0644)
+	if err != nil {
+		panic(err)
+	}
+	util.PrintWithPrefix("created", "#6C757D", controllerFilePath)
+}
+
+func createResourceFile(packageName string, controllerNameUpperCamel string, controllerFilePath string) {
+	controllerNameUpperCamel = controllerNameUpperCamel + "Resource"
+	// Form the contents for the controller file
+	controllerTemplate := `package controllers
+
+import (
+	caesar "github.com/caesar-rocks/core"
+	"myapp/app/models"
+	"myapp/app/repositories"
+	"net/http"
+)
+
+
+// Update config.Routes with the following:
+
+// func RegisterRoutes(
+//	ApplicationsRepository *repositories.ApplicationsRepository,
+// ) *caesar.Router {
+// Applications Resource Controller
+// controller := controllers.NewApplicationsController(
+// 	ApplicationsRepository,
+// )
+// router.Get("/user/{id}", func(ctx *caesar.CaesarCtx) error {
+// 	return controller.Index(ctx)
+// })
+// router.Get("/user/all", func(ctx *caesar.CaesarCtx) error {
+// 	return controller.Show(ctx)
+// })
+// router.Post("/user/create", func(ctx *caesar.CaesarCtx) error {
+// 	return controller.Create(ctx)
+// })
+// router.Delete("/user/{id}/delete", func(ctx *caesar.CaesarCtx) error {
+// 	return controller.Delete(ctx)
+// })
+// router.Patch("/user/update", func(ctx *caesar.CaesarCtx) error {
+// 	return controller.Update(ctx)
+// })
+
+type ApplicationsController struct {
+	repo *repositories.ApplicationsRepository
+}
+
+func NewApplicationsController() *ApplicationsController {
+	return &ApplicationsController{repo: repo}
+}
+
+// Simple Response Serializers
+type serializeSingleResponse struct {
+	Results *models.MyModel
+}
+
+type serializeMultipleResponse struct {
+	Results []models.MyModel
+}
+
+func (c *ApplicationsController) Index(ctx *caesar.CaesarCtx) error {
+	// curl localhost:3000/user/1/ -H "Content-Type: application/json"
+	model, err := c.repo.FindOneBy(ctx.Context(), "id", ctx.PathValue("id"))
+	if err != nil {
+		return ctx.SendJSON(http.StatusInternalServerError)
+	}
+	serializedResponse := serializeSingleResponse{
+		Results: model,
+	}
+	return ctx.SendJSON(serializedResponse)
+}
+
+func (c *ApplicationsController) Show(ctx *caesar.CaesarCtx) error {
+	// curl localhost:3000/users/all -H "Content-Type: application/json"
+	models, err := c.repo.FindAll(ctx.Context())
+	if err != nil {
+		return caesar.NewError(http.StatusInternalServerError)
+	}
+	serializedResponse := serializeMultipleResponse{
+		Results: models,
+	}
+	return ctx.SendJSON(serializedResponse)
+}
+
+func (c *ApplicationsController) Create(ctx *caesar.CaesarCtx) error {
+	// curl -X POST localhost:3000/user/create/ -H "Content-Type: application/json" -d '{"name": "name"}'
+	var data struct {
+		Name string json:"name" // add back ticks around json:"name"
+	}
+	if err := ctx.DecodeJSON(&data); err != nil {
+		return caesar.NewError(http.StatusBadRequest)
+	}
+	model := &models.StorageBucket{
+		Name: data.Name,
+	}
+	if err := c.repo.Create(ctx.Context(), model); err != nil {
+		return caesar.NewError(http.StatusInternalServerError)
+	}
+	serializedResponse := serializeSingleResponse{
+		Results: model,
+	}
+	return ctx.SendJSON(serializedResponse)
+}
+
+func (c *ApplicationsController) Delete(ctx *caesar.CaesarCtx) error {
+	// curl -X DELETE localhost:3000/user/1/delete/ -H "Content-Type: application/json"
+	err := c.repo.DeleteOneWhere(ctx.Context(), "id", ctx.PathValue("id"))
+	if err != nil {
+		return caesar.NewError(http.StatusInternalServerError)
+	}
+	return ctx.SendJSON("Row Deleted")
+}
+
+func (c *ApplicationsController) Update(ctx *caesar.CaesarCtx) error {
+	// curl -X PATCH localhost:3000/user/update/ -H "Content-Type: application/json" -d '{"id": "cpplfv2claah1c0s6a8g" , "name": "name2"}'
+	var data struct {
+		ID   string json:"id" // add back ticks around json:"id"
+		Name string json:"name" // add back ticks around json:"name"
+	}
+	if err := ctx.DecodeJSON(&data); err != nil {
+		return caesar.NewError(http.StatusBadRequest)
+	}
+	model := &models.StorageBucket{
+		Name: data.Name,
+	}
+	if err := c.repo.UpdateOneWhere(ctx.Context(), "id", data.ID, model); err != nil {
+		return caesar.NewError(http.StatusInternalServerError)
+	}
+	serializedResponse := serializeSingleResponse{
+		Results: model,
+	}
+	return ctx.SendJSON(serializedResponse)
+}
+
 `
 	controllerTemplate = strings.ReplaceAll(controllerTemplate, "Applications", controllerNameUpperCamel)
 	controllerTemplate = strings.ReplaceAll(controllerTemplate, "package controllers", "package "+packageName)

@@ -56,7 +56,7 @@ func MakeRepository(opts MakeRepositoryOpts) error {
 
 	repositoryNameUpperCamel := util.ConvertToUpperCamelCase(repositoryNameSnake)
 
-	if err := createRepositoryFile(packageName, repositoryNameUpperCamel, repositoryFilePath); err != nil {
+	if err := createRepositoryFile(repositoryNameUpperCamel, repositoryFilePath); err != nil {
 		return err
 	}
 
@@ -69,7 +69,7 @@ func MakeRepository(opts MakeRepositoryOpts) error {
 	return nil
 }
 
-func createRepositoryFile(packageName string, repositoryNameUpperCamel string, repositoryFilePath string) error {
+func createRepositoryFile(repositoryNameUpperCamel string, repositoryFilePath string) error {
 	// Form the contents for the repository file
 	repositoryTemplate := `package repositories
 
