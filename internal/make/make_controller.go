@@ -106,11 +106,12 @@ import (
 
 
 // Update config.Routes with the following:
-
-// func RegisterRoutes(
-//	ApplicationsRepository *repositories.ApplicationsRepository,
-// ) *caesar.Router {
-// Applications Resource Controller
+// 1.
+// Pass ApplicationsRepository *repositories.ApplicationsRepository, into RegisterRoutes()
+// 
+// 2. 
+// Within RegisterRoutes() function:
+// Applications Controller
 // controller := controllers.NewApplicationsController(
 // 	ApplicationsRepository,
 // )
@@ -172,7 +173,7 @@ func (c *ApplicationsController) Show(ctx *caesar.CaesarCtx) error {
 }
 
 func (c *ApplicationsController) Create(ctx *caesar.CaesarCtx) error {
-	// curl -X POST localhost:3000/user/create/ -H "Content-Type: application/json" -d '{"name": "name"}'
+	// curl -X POST localhost:3000/user/create/ -H "Content-Type: application/json" -d '{"name": "myname"}'
 	var data struct {
 		Name string json:"name" // add back ticks around json:"name"
 	}
@@ -201,7 +202,7 @@ func (c *ApplicationsController) Delete(ctx *caesar.CaesarCtx) error {
 }
 
 func (c *ApplicationsController) Update(ctx *caesar.CaesarCtx) error {
-	// curl -X PATCH localhost:3000/user/update/ -H "Content-Type: application/json" -d '{"id": "cpplfv2claah1c0s6a8g" , "name": "name2"}'
+	// curl -X PATCH localhost:3000/user/update/ -H "Content-Type: application/json" -d '{"id": "1" , "name": "newname"}'
 	var data struct {
 		ID   string json:"id" // add back ticks around json:"id"
 		Name string json:"name" // add back ticks around json:"name"
