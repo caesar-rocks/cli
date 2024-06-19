@@ -26,8 +26,9 @@ func runAi(cmd *cobra.Command, args []string) {
 	}
 
 	gen := ai.NewLlmGeneration()
-	gen.AddTool(tool.NewTool(make.MakeController, "Generate a new controller"))
-	gen.AddTool(tool.NewTool(make.MakeMigration, "Generate a new controller"))
+	gen.AddTool(tool.NewTool(make.MakeController, "Generate a new Caesar controller"))
+	gen.AddTool(tool.NewTool(make.MakeMigration, "Generate a new Caesar migration"))
+	gen.AddTool(tool.NewTool(make.MakeModel, "Generate a new Bun model struct"))
 	if err := gen.Generate(prompt); err != nil {
 		util.PrintWithPrefix("error", "#FF0000", err.Error())
 	}
