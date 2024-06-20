@@ -35,6 +35,9 @@ func runAi(cmd *cobra.Command, args []string) {
 	gen.AddTool(tool.NewTool(wrapper.MakeModel, "Generate a new Bun model struct"))
 	gen.AddTool(tool.NewTool(wrapper.MakeRepository, "Generate a new Caesar repository"))
 	gen.AddTool(tool.NewTool(wrapper.AddUIComponent, "Add a new Caesar UI component"))
+	gen.AddTool(tool.NewTool(wrapper.ListFiles, "List all files in the current directory"))
+	gen.AddTool(tool.NewTool(wrapper.ReadFileContents, "Read the contents of a file"))
+	gen.AddTool(tool.NewTool(wrapper.WriteContentsToFile, "Replace the contents of a file"))
 	if err := gen.Generate(prompt); err != nil {
 		inform.Inform(os.Stdout, inform.Error, err.Error())
 	}

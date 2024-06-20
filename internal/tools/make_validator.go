@@ -9,8 +9,12 @@ import (
 	"github.com/caesar-rocks/cli/util/inform"
 )
 
-func (wrapper *ToolsWrapper) MakeValidator(input string) error {
-	validatorNameSnake := util.ConvertToSnakeCase(input)
+type MakeValidatorOpts struct {
+	ValidatiorName string `description:"The name of the validator to create"`
+}
+
+func (wrapper *ToolsWrapper) MakeValidator(opts MakeValidatorOpts) error {
+	validatorNameSnake := util.ConvertToSnakeCase(opts.ValidatiorName)
 
 	packageName := "validators"
 	inputSnakeParts := strings.Split(validatorNameSnake, "/")

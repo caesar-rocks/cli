@@ -14,17 +14,26 @@ var makeModelCmd = &cobra.Command{
 	Short:   "Create a new model",
 	GroupID: "make",
 	Run: func(cmd *cobra.Command, args []string) {
-		var input string
+		var (
+			modelName      string
+			withRepository bool
+		)
 
 		if len(args) > 0 {
-			input = args[0]
+			modelName = args[0]
 		} else {
-			huh.NewInput().Title("How should we name your model, civis Romanus?").Value(&input).Run()
+			huh.NewInput().Title("How should we name your model, civis Romanus?").Value(&modelName).Run()
 		}
+
+		huh.NewConfirm().
+			Title("Do you want to create a repository for this model?").
+			Value(&withRepository).
+			Run()
 
 		wrapper := tools.NewToolsWrapper(os.Stdout)
 		if err := wrapper.MakeModel(tools.MakeModelOpts{
-			ModelName: input,
+			ModelName:      modelName,
+			WithRepository: withRepository,
 		}); err != nil {
 			inform.Inform(os.Stdout, inform.Error, err.Error())
 		}

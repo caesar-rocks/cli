@@ -36,8 +36,13 @@ func (t *AiTool) Invoke(args map[string]any) (any, error) {
 	}
 
 	fnType := fnValue.Type()
-	if fnType.NumIn() != 1 {
-		return nil, fmt.Errorf("function must have exactly one parameter")
+	if fnType.NumIn() == 0 {
+		results := fnValue.Call([]reflect.Value{})
+		if len(results) == 0 {
+			return nil, nil
+		}
+
+		return results[0].Interface(), nil
 	}
 
 	paramType := fnType.In(0)
@@ -95,6 +100,10 @@ func GetFunctionName(fn any) string {
 
 func GetFunctionParameters(fn any) any {
 	fnType := reflect.TypeOf(fn)
+
+	if fnType.NumIn() != 1 {
+		return nil
+	}
 
 	optsStruct := fnType.In(0)
 

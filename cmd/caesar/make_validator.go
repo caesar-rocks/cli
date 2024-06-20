@@ -23,7 +23,9 @@ var makeValidatorCmd = &cobra.Command{
 		}
 
 		wrapper := tools.NewToolsWrapper(os.Stdout)
-		if err := wrapper.MakeValidator(input); err != nil {
+		if err := wrapper.MakeValidator(tools.MakeValidatorOpts{
+			ValidatiorName: input,
+		}); err != nil {
 			util.ExitWithError(err)
 		}
 	},

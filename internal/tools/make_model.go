@@ -7,10 +7,12 @@ import (
 	"strings"
 
 	"github.com/caesar-rocks/cli/util"
+	"github.com/caesar-rocks/cli/util/inform"
 )
 
 type MakeModelOpts struct {
-	ModelName string `description:"The name of the model to create"`
+	ModelName      string `description:"The name of the model to create"`
+	WithRepository bool   `description:"Whether to create a repository for the model"`
 }
 
 func (wrapper *ToolsWrapper) MakeModel(opts MakeModelOpts) error {
@@ -67,7 +69,14 @@ func (m *%s) BeforeAppendModel(ctx context.Context, query bun.Query) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("Model created successfully at", modelFilePath)
+	wrapper.Inform(inform.Created, modelFilePath)
+
+	// Create the repository if requested
+	if opts.WithRepository {
+		return wrapper.MakeRepository(MakeRepositoryOpts{
+			ModelName: modelNameCamelCase,
+		})
+	}
 
 	return nil
 }

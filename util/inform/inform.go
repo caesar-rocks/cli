@@ -11,7 +11,7 @@ func InformWithPrefix(w io.Writer, prefix string, prefixColor string, value stri
 	prefixStyle := lipgloss.NewStyle().
 		Foreground(lipgloss.Color(prefixColor)).
 		Bold(true)
-	fmt.Printf("%s %s\n", prefixStyle.Render(prefix), value)
+	fmt.Fprintf(w, "%s %s\n", prefixStyle.Render(prefix), value)
 }
 
 type Level string
@@ -23,6 +23,7 @@ const (
 	Success Level = "success"
 	Info    Level = "info"
 	Error   Level = "error"
+	Ai      Level = "ai"
 )
 
 func (l Level) String() string {
@@ -42,6 +43,7 @@ func Inform(w io.Writer, level Level, message string, noColor ...bool) {
 	case Info:
 		InformWithPrefix(w, level.String(), "#00c9ff", message)
 	case Updated:
+	case Ai:
 		InformWithPrefix(w, level.String(), "#6C757D", message)
 	case Error:
 	case Deleted:
