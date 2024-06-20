@@ -1,4 +1,4 @@
-package make
+package tools
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ type MakeModelOpts struct {
 	ModelName string `description:"The name of the model to create"`
 }
 
-func MakeModel(opts MakeModelOpts) error {
+func (wrapper *ToolsWrapper) MakeModel(opts MakeModelOpts) error {
 	modelNameCamelCase := opts.ModelName
 	modelNameSnakeCase := util.CamelToSnake(modelNameCamelCase)
 

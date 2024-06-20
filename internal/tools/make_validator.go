@@ -1,4 +1,4 @@
-package make
+package tools
 
 import (
 	"fmt"
@@ -6,9 +6,10 @@ import (
 	"strings"
 
 	"github.com/caesar-rocks/cli/util"
+	"github.com/caesar-rocks/cli/util/inform"
 )
 
-func MakeValidator(input string) error {
+func (wrapper *ToolsWrapper) MakeValidator(input string) error {
 	validatorNameSnake := util.ConvertToSnakeCase(input)
 
 	packageName := "validators"
@@ -52,7 +53,7 @@ type %s struct {
 		return err
 	}
 
-	util.PrintWithPrefix("created", "#6C757D", validatorFilePath)
+	wrapper.Inform(inform.Created, "Validator created successfully.")
 
 	return nil
 }

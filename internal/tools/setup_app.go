@@ -1,4 +1,4 @@
-package make
+package tools
 
 import (
 	"fmt"
@@ -19,7 +19,7 @@ type SetupAppOpts struct {
 	AppName string `description:"The name of the app you want to create"`
 }
 
-func SetupApp(opts SetupAppOpts) error {
+func (wrapper *ToolsWrapper) SetupApp(opts SetupAppOpts) error {
 	appNameSnake := util.ConvertToSnakeCase(opts.AppName)
 
 	_, err := git.PlainClone("./"+appNameSnake, false, &git.CloneOptions{

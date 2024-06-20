@@ -3,7 +3,9 @@ package ai
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
+	"strings"
 
 	"github.com/caesar-rocks/cli/internal/ai/tool"
 	"github.com/sashabaranov/go-openai"
@@ -11,16 +13,20 @@ import (
 
 type LlmGeneration struct {
 	dialogue []openai.ChatCompletionMessage
-	tools    map[string]tool.Tool
+	tools    map[string]tool.AiTool
+
+	// stringsBuilder is used to capture the output of the AI tool calls.
+	StringsBuilder *strings.Builder
 }
 
 func NewLlmGeneration() *LlmGeneration {
 	return &LlmGeneration{
-		tools: make(map[string]tool.Tool),
+		tools:          make(map[string]tool.AiTool),
+		StringsBuilder: &strings.Builder{},
 	}
 }
 
-func (gen *LlmGeneration) AddTool(tool tool.Tool) {
+func (gen *LlmGeneration) AddTool(tool tool.AiTool) {
 	gen.tools[tool.Function.Name] = tool
 }
 
@@ -72,12 +78,14 @@ func (gen *LlmGeneration) Generate(prompt string) error {
 					errString = "No error occurred."
 				}
 
+				content := fmt.Sprintf("Error: %s\nOutput: %s", errString, gen.StringsBuilder.String())
 				gen.dialogue = append(gen.dialogue, openai.ChatCompletionMessage{
 					Role:       openai.ChatMessageRoleTool,
-					Content:    errString,
+					Content:    content,
 					Name:       toolCall.Function.Name,
 					ToolCallID: toolCall.ID,
 				})
+				gen.StringsBuilder.Reset()
 			}
 		}
 	}

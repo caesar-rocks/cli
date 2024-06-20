@@ -1,4 +1,4 @@
-package make
+package tools
 
 import (
 	"fmt"
@@ -6,13 +6,14 @@ import (
 	"strings"
 
 	"github.com/caesar-rocks/cli/util"
+	"github.com/caesar-rocks/cli/util/inform"
 )
 
 type MakeControllerOpts struct {
 	Input string `description:"The name of the controller to create"`
 }
 
-func MakeController(opts MakeControllerOpts) error {
+func (wrapper *ToolsWrapper) MakeController(opts MakeControllerOpts) error {
 	inputSnake := util.ConvertToSnakeCase(opts.Input)
 
 	packageName := "controllers"
@@ -42,15 +43,15 @@ func MakeController(opts MakeControllerOpts) error {
 
 	controllerNameUpperCamel := util.ConvertToUpperCamelCase(controllerNameSnake)
 
-	createControllerFile(packageName, controllerNameUpperCamel, controllerFilePath)
-	registerController(packageName, controllerNameUpperCamel)
+	wrapper.createControllerFile(packageName, controllerNameUpperCamel, controllerFilePath)
+	wrapper.registerController(packageName, controllerNameUpperCamel)
 
-	util.PrintWithPrefix("success", "#00c900", "Controller created successfully.")
+	wrapper.Inform(inform.Created, "Controller created successfully.")
 
 	return nil
 }
 
-func createControllerFile(packageName string, controllerNameUpperCamel string, controllerFilePath string) {
+func (wrapper *ToolsWrapper) createControllerFile(packageName string, controllerNameUpperCamel string, controllerFilePath string) {
 	// Form the contents for the controller file
 	controllerTemplate := `package controllers
 
@@ -84,10 +85,10 @@ func NewApplicationsController() *ApplicationsController {
 	if err != nil {
 		panic(err)
 	}
-	util.PrintWithPrefix("created", "#6C757D", controllerFilePath)
+	wrapper.Inform(inform.Created, controllerFilePath)
 }
 
-func registerController(packageName string, controllerNameUpperCamel string) {
+func (wrapper *ToolsWrapper) registerController(packageName string, controllerNameUpperCamel string) {
 	// Read file's contents
 	bytes, err := os.ReadFile("./config/app.go")
 	if err != nil {
@@ -130,6 +131,6 @@ func registerController(packageName string, controllerNameUpperCamel string) {
 		if err != nil {
 			panic(err)
 		}
-		util.PrintWithPrefix("modified", "#6C757D", "./config/app.go")
+		wrapper.Inform(inform.Updated, "./config/app.go")
 	}
 }

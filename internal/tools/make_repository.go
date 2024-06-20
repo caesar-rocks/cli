@@ -1,4 +1,4 @@
-package make
+package tools
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/caesar-rocks/cli/util"
+	"github.com/caesar-rocks/cli/util/inform"
 	"github.com/gertd/go-pluralize"
 )
 
@@ -17,7 +18,7 @@ type MakeRepositoryOpts struct {
 	ModelName string `description:"The name of the model to create a repository for"`
 }
 
-func MakeRepository(opts MakeRepositoryOpts) error {
+func (wrapper *ToolsWrapper) MakeRepository(opts MakeRepositoryOpts) error {
 	modelNameSnake := util.CamelToSnake(opts.ModelName)
 
 	packageName := "repositories"
@@ -56,20 +57,20 @@ func MakeRepository(opts MakeRepositoryOpts) error {
 
 	repositoryNameUpperCamel := util.ConvertToUpperCamelCase(repositoryNameSnake)
 
-	if err := createRepositoryFile(packageName, repositoryNameUpperCamel, repositoryFilePath); err != nil {
+	if err := wrapper.createRepositoryFile(packageName, repositoryNameUpperCamel, repositoryFilePath); err != nil {
 		return err
 	}
 
-	if err := registerRepository(packageName, repositoryNameUpperCamel); err != nil {
+	if err := wrapper.registerRepository(packageName, repositoryNameUpperCamel); err != nil {
 		return err
 	}
 
-	util.PrintWithPrefix("success", "#00c900", "Repository created successfully.")
+	wrapper.Inform(inform.Created, "Repository created successfully.")
 
 	return nil
 }
 
-func createRepositoryFile(packageName string, repositoryNameUpperCamel string, repositoryFilePath string) error {
+func (wrapper *ToolsWrapper) createRepositoryFile(packageName string, repositoryNameUpperCamel string, repositoryFilePath string) error {
 	// Form the contents for the repository file
 	repositoryTemplate := `package repositories
 
@@ -98,12 +99,12 @@ func NewApplicationsRepository(db *orm.Database) *ApplicationsRepository {
 	if err != nil {
 		return err
 	}
-	util.PrintWithPrefix("created", "#6C757D", repositoryFilePath)
+	wrapper.Inform(inform.Created, repositoryFilePath)
 
 	return nil
 }
 
-func registerRepository(packageName string, repositoryNameUpperCamel string) error {
+func (wrapper *ToolsWrapper) registerRepository(packageName string, repositoryNameUpperCamel string) error {
 	// Read the contents of the app.go file
 	appFilePath := "./config/app.go"
 	bytes, err := os.ReadFile(appFilePath)
@@ -152,7 +153,7 @@ func registerRepository(packageName string, repositoryNameUpperCamel string) err
 		if err != nil {
 			return fmt.Errorf("unable to write to app.go file: %v", err)
 		}
-		util.PrintWithPrefix("modified", "#6C757D", appFilePath)
+		wrapper.Inform(inform.Updated, appFilePath)
 	}
 
 	return nil

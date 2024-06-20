@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
+	"os"
 
-	"github.com/caesar-rocks/cli/internal/make"
+	"github.com/caesar-rocks/cli/internal/tools"
 	"github.com/caesar-rocks/cli/util"
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/huh/spinner"
@@ -27,7 +28,8 @@ var newCmd = &cobra.Command{
 		err := spinner.New().
 			Title("Setting up your new Caesar application").
 			Action(func() {
-				if err := make.SetupApp(make.SetupAppOpts{AppName: appName}); err != nil {
+				wrapper := tools.NewToolsWrapper(os.Stdout)
+				if err := wrapper.SetupApp(tools.SetupAppOpts{AppName: appName}); err != nil {
 					util.ExitAndCleanUp(util.ConvertToSnakeCase(appName), err)
 				}
 			}).
