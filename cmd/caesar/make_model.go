@@ -17,6 +17,7 @@ var makeModelCmd = &cobra.Command{
 		var (
 			modelName      string
 			withRepository bool
+			withMigration  bool
 		)
 
 		if len(args) > 0 {
@@ -30,10 +31,16 @@ var makeModelCmd = &cobra.Command{
 			Value(&withRepository).
 			Run()
 
+		huh.NewConfirm().
+			Title("Do you want to create a migration for this model?").
+			Value(&withMigration).
+			Run()
+
 		wrapper := tools.NewToolsWrapper(os.Stdout)
 		if err := wrapper.MakeModel(tools.MakeModelOpts{
 			ModelName:      modelName,
 			WithRepository: withRepository,
+			WithMigration:  withMigration,
 		}); err != nil {
 			inform.Inform(os.Stdout, inform.Error, err.Error())
 		}

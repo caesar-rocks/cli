@@ -13,6 +13,7 @@ import (
 type MakeModelOpts struct {
 	ModelName      string `description:"The name of the model to create"`
 	WithRepository bool   `description:"Whether to create a repository for the model"`
+	WithMigration  bool   `description:"Whether to create a migration for the model"`
 }
 
 func (wrapper *ToolsWrapper) MakeModel(opts MakeModelOpts) error {
@@ -75,6 +76,13 @@ func (m *%s) BeforeAppendModel(ctx context.Context, query bun.Query) error {
 	if opts.WithRepository {
 		return wrapper.MakeRepository(MakeRepositoryOpts{
 			ModelName: modelNameCamelCase,
+		})
+	}
+
+	// Create the migration if requested
+	if opts.WithMigration {
+		return wrapper.MakeMigration(MakeMigrationOpts{
+			MigrationName: modelNameCamelCase,
 		})
 	}
 
