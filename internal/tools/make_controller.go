@@ -71,7 +71,7 @@ func NewApplicationsController() *ApplicationsController {
 }
 
 // Define controller methods here
-// func (c *ApplicationsController) Index(ctx *caesar.CaesarCtx) error {
+// func (c *ApplicationsController) Index(ctx *caesar.Context) error {
 // 	// Implement the controller method here
 
 // 	return nil
