@@ -21,7 +21,8 @@ var makeControllerCmd = &cobra.Command{
 		}
 
 		if err := make.MakeController(make.MakeControllerOpts{
-			Input: input,
+			Input:    input,
+			Resource: false,
 		}); err != nil {
 			util.PrintWithPrefix("error", "#FF0000", err.Error())
 		}

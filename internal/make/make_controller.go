@@ -45,6 +45,7 @@ func MakeController(opts MakeControllerOpts) error {
 
 	if opts.Resource {
 		createResourceFile(packageName, controllerNameUpperCamel, controllerFilePath)
+		controllerNameUpperCamel = controllerNameUpperCamel + "Resources"
 	} else {
 		createControllerFile(packageName, controllerNameUpperCamel, controllerFilePath)
 	}
@@ -93,14 +94,13 @@ func NewApplicationsController() *ApplicationsController {
 }
 
 func createResourceFile(packageName string, controllerNameUpperCamel string, controllerFilePath string) {
-	controllerNameUpperCamel = controllerNameUpperCamel + "Resource"
 	// Form the contents for the controller file
 	controllerTemplate := `package controllers
 
 import (
 	caesar "github.com/caesar-rocks/core"
-	"myapp/app/models"
-	"myapp/app/repositories"
+	"citadel/app/models"
+	"citadel/app/repositories"
 	"net/http"
 )
 
@@ -135,16 +135,16 @@ type ApplicationsController struct {
 	repo *repositories.ApplicationsRepository
 }
 
-func NewApplicationsController() *ApplicationsController {
+func NewApplicationsController(repo *repositories.ApplicationsRepository) *ApplicationsController {
 	return &ApplicationsController{repo: repo}
 }
 
 // Simple Response Serializers
-type serializeSingleResponse struct {
+type serializeApplicationsSingleResponse struct {
 	Results *models.MyModel
 }
 
-type serializeMultipleResponse struct {
+type serializeApplicationsMultipleResponse struct {
 	Results []models.MyModel
 }
 
@@ -175,7 +175,7 @@ func (c *ApplicationsController) Show(ctx *caesar.CaesarCtx) error {
 func (c *ApplicationsController) Create(ctx *caesar.CaesarCtx) error {
 	// curl -X POST localhost:3000/user/create/ -H "Content-Type: application/json" -d '{"name": "myname"}'
 	var data struct {
-		Name string json:"name" // add back ticks around json:"name"
+		Name string ` + "`json:\"name\"`" + `
 	}
 	if err := ctx.DecodeJSON(&data); err != nil {
 		return caesar.NewError(http.StatusBadRequest)
@@ -204,8 +204,8 @@ func (c *ApplicationsController) Delete(ctx *caesar.CaesarCtx) error {
 func (c *ApplicationsController) Update(ctx *caesar.CaesarCtx) error {
 	// curl -X PATCH localhost:3000/user/update/ -H "Content-Type: application/json" -d '{"id": "1" , "name": "newname"}'
 	var data struct {
-		ID   string json:"id" // add back ticks around json:"id"
-		Name string json:"name" // add back ticks around json:"name"
+		ID   string ` + "`json:\"id\"`" + `
+		Name string ` + "`json:\"name\"`" + `
 	}
 	if err := ctx.DecodeJSON(&data); err != nil {
 		return caesar.NewError(http.StatusBadRequest)
@@ -223,6 +223,9 @@ func (c *ApplicationsController) Update(ctx *caesar.CaesarCtx) error {
 }
 
 `
+	controllerTemplate = strings.ReplaceAll(controllerTemplate, "citadel", util.RetrieveModuleName())
+	controllerNameUpperCamel = controllerNameUpperCamel + "Resources"
+	controllerTemplate = strings.ReplaceAll(controllerTemplate, "MyModel", controllerNameUpperCamel)
 	controllerTemplate = strings.ReplaceAll(controllerTemplate, "Applications", controllerNameUpperCamel)
 	controllerTemplate = strings.ReplaceAll(controllerTemplate, "package controllers", "package "+packageName)
 

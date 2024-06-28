@@ -21,7 +21,7 @@ var makeResourceCmd = &cobra.Command{
 		}
 
 		if err := make.MakeRepository(make.MakeRepositoryOpts{
-			ModelName: input,
+			ModelName: input + "Resources",
 		}); err != nil {
 			util.PrintWithPrefix("error", "#FF0000", err.Error())
 		}
