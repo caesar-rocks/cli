@@ -58,7 +58,6 @@ func (wrapper *ToolsWrapper) MakeRepository(opts MakeRepositoryOpts) error {
 	repositoryNameUpperCamel := util.ConvertToUpperCamelCase(repositoryNameSnake)
 
 	if err := wrapper.createRepositoryFile(packageName, repositoryNameUpperCamel, repositoryFilePath); err != nil {
-
 		return err
 	}
 
