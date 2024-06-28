@@ -224,9 +224,8 @@ func (c *ApplicationsController) Update(ctx *caesar.CaesarCtx) error {
 
 `
 	controllerTemplate = strings.ReplaceAll(controllerTemplate, "citadel", util.RetrieveModuleName())
-	controllerNameUpperCamel = controllerNameUpperCamel + "Resources"
-	controllerTemplate = strings.ReplaceAll(controllerTemplate, "MyModel", controllerNameUpperCamel)
-	controllerTemplate = strings.ReplaceAll(controllerTemplate, "Applications", controllerNameUpperCamel)
+	controllerTemplate = strings.ReplaceAll(controllerTemplate, "MyModel", controllerNameUpperCamel+"Resource")
+	controllerTemplate = strings.ReplaceAll(controllerTemplate, "Applications", controllerNameUpperCamel+"Resources")
 	controllerTemplate = strings.ReplaceAll(controllerTemplate, "package controllers", "package "+packageName)
 
 	// Write the contents to the file
