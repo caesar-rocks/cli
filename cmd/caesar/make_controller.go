@@ -24,7 +24,8 @@ var makeControllerCmd = &cobra.Command{
 
 		wrapper := tools.NewToolsWrapper(os.Stdout)
 		if err := wrapper.MakeController(tools.MakeControllerOpts{
-			Input: input,
+			Input:    input,
+			Resource: false,
 		}); err != nil {
 			inform.Inform(os.Stdout, inform.Error, err.Error())
 		}
