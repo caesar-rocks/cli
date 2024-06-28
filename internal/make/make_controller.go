@@ -76,7 +76,7 @@ func NewApplicationsController() *ApplicationsController {
 }
 
 // Define controller methods here
-// func (c *ApplicationsController) Index(ctx *caesar.CaesarCtx) error {
+// func (c *ApplicationsController) Index(ctx *caesar.Context) error {
 // 	// Implement the controller method here
 
 // 	return nil
@@ -115,19 +115,19 @@ import (
 // controller := controllers.NewApplicationsController(
 // 	ApplicationsRepository,
 // )
-// router.Get("/user/{id}", func(ctx *caesar.CaesarCtx) error {
+// router.Get("/user/{id}", func(ctx *caesar.Context) error {
 // 	return controller.Index(ctx)
 // })
-// router.Get("/user/all", func(ctx *caesar.CaesarCtx) error {
+// router.Get("/user/all", func(ctx *caesar.Context) error {
 // 	return controller.Show(ctx)
 // })
-// router.Post("/user/create", func(ctx *caesar.CaesarCtx) error {
+// router.Post("/user/create", func(ctx *caesar.Context) error {
 // 	return controller.Create(ctx)
 // })
-// router.Delete("/user/{id}/delete", func(ctx *caesar.CaesarCtx) error {
+// router.Delete("/user/{id}/delete", func(ctx *caesar.Context) error {
 // 	return controller.Delete(ctx)
 // })
-// router.Patch("/user/update", func(ctx *caesar.CaesarCtx) error {
+// router.Patch("/user/update", func(ctx *caesar.Context) error {
 // 	return controller.Update(ctx)
 // })
 
@@ -148,7 +148,7 @@ type serializeApplicationsMultipleResponse struct {
 	Results []models.MyModel
 }
 
-func (c *ApplicationsController) Index(ctx *caesar.CaesarCtx) error {
+func (c *ApplicationsController) Index(ctx *caesar.Context) error {
 	// curl localhost:3000/user/1/ -H "Content-Type: application/json"
 	model, err := c.repo.FindOneBy(ctx.Context(), "id", ctx.PathValue("id"))
 	if err != nil {
@@ -160,7 +160,7 @@ func (c *ApplicationsController) Index(ctx *caesar.CaesarCtx) error {
 	return ctx.SendJSON(serializedResponse)
 }
 
-func (c *ApplicationsController) Show(ctx *caesar.CaesarCtx) error {
+func (c *ApplicationsController) Show(ctx *caesar.Context) error {
 	// curl localhost:3000/users/all -H "Content-Type: application/json"
 	models, err := c.repo.FindAll(ctx.Context())
 	if err != nil {
@@ -172,7 +172,7 @@ func (c *ApplicationsController) Show(ctx *caesar.CaesarCtx) error {
 	return ctx.SendJSON(serializedResponse)
 }
 
-func (c *ApplicationsController) Create(ctx *caesar.CaesarCtx) error {
+func (c *ApplicationsController) Create(ctx *caesar.Context) error {
 	// curl -X POST localhost:3000/user/create/ -H "Content-Type: application/json" -d '{"name": "myname"}'
 	var data struct {
 		Name string ` + "`json:\"name\"`" + `
@@ -192,7 +192,7 @@ func (c *ApplicationsController) Create(ctx *caesar.CaesarCtx) error {
 	return ctx.SendJSON(serializedResponse)
 }
 
-func (c *ApplicationsController) Delete(ctx *caesar.CaesarCtx) error {
+func (c *ApplicationsController) Delete(ctx *caesar.Context) error {
 	// curl -X DELETE localhost:3000/user/1/delete/ -H "Content-Type: application/json"
 	err := c.repo.DeleteOneWhere(ctx.Context(), "id", ctx.PathValue("id"))
 	if err != nil {
@@ -201,7 +201,7 @@ func (c *ApplicationsController) Delete(ctx *caesar.CaesarCtx) error {
 	return ctx.SendJSON("Row Deleted")
 }
 
-func (c *ApplicationsController) Update(ctx *caesar.CaesarCtx) error {
+func (c *ApplicationsController) Update(ctx *caesar.Context) error {
 	// curl -X PATCH localhost:3000/user/update/ -H "Content-Type: application/json" -d '{"id": "1" , "name": "newname"}'
 	var data struct {
 		ID   string ` + "`json:\"id\"`" + `
