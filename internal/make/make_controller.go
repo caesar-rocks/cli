@@ -115,19 +115,19 @@ import (
 // controller := controllers.NewApplicationsController(
 // 	ApplicationsRepository,
 // )
-// router.Get("/user/{id}", func(ctx *caesar.Context) error {
+// router.Get("/routeplaceholder/{id}", func(ctx *caesar.Context) error {
 // 	return controller.Index(ctx)
 // })
-// router.Get("/user/all", func(ctx *caesar.Context) error {
+// router.Get("/routeplaceholder/all", func(ctx *caesar.Context) error {
 // 	return controller.Show(ctx)
 // })
-// router.Post("/user/create", func(ctx *caesar.Context) error {
+// router.Post("/routeplaceholder/create", func(ctx *caesar.Context) error {
 // 	return controller.Create(ctx)
 // })
-// router.Delete("/user/{id}/delete", func(ctx *caesar.Context) error {
+// router.Delete("/routeplaceholder/{id}/delete", func(ctx *caesar.Context) error {
 // 	return controller.Delete(ctx)
 // })
-// router.Patch("/user/update", func(ctx *caesar.Context) error {
+// router.Patch("/routeplaceholder/update", func(ctx *caesar.Context) error {
 // 	return controller.Update(ctx)
 // })
 
@@ -149,7 +149,7 @@ type serializeApplicationsMultipleResponse struct {
 }
 
 func (c *ApplicationsController) Index(ctx *caesar.Context) error {
-	// curl localhost:3000/user/1/ -H "Content-Type: application/json"
+	// curl localhost:3000/routeplaceholder/1/ -H "Content-Type: application/json"
 	model, err := c.repo.FindOneBy(ctx.Context(), "id", ctx.PathValue("id"))
 	if err != nil {
 		return ctx.SendJSON(http.StatusInternalServerError)
@@ -161,7 +161,7 @@ func (c *ApplicationsController) Index(ctx *caesar.Context) error {
 }
 
 func (c *ApplicationsController) Show(ctx *caesar.Context) error {
-	// curl localhost:3000/users/all -H "Content-Type: application/json"
+	// curl localhost:3000/routeplaceholders/all -H "Content-Type: application/json"
 	models, err := c.repo.FindAll(ctx.Context())
 	if err != nil {
 		return caesar.NewError(http.StatusInternalServerError)
@@ -173,7 +173,7 @@ func (c *ApplicationsController) Show(ctx *caesar.Context) error {
 }
 
 func (c *ApplicationsController) Create(ctx *caesar.Context) error {
-	// curl -X POST localhost:3000/user/create/ -H "Content-Type: application/json" -d '{"name": "myname"}'
+	// curl -X POST localhost:3000/routeplaceholder/create/ -H "Content-Type: application/json" -d '{"name": "myname"}'
 	var data struct {
 		Name string ` + "`json:\"name\"`" + `
 	}
@@ -193,7 +193,7 @@ func (c *ApplicationsController) Create(ctx *caesar.Context) error {
 }
 
 func (c *ApplicationsController) Delete(ctx *caesar.Context) error {
-	// curl -X DELETE localhost:3000/user/1/delete/ -H "Content-Type: application/json"
+	// curl -X DELETE localhost:3000/routeplaceholder/1/delete/ -H "Content-Type: application/json"
 	err := c.repo.DeleteOneWhere(ctx.Context(), "id", ctx.PathValue("id"))
 	if err != nil {
 		return caesar.NewError(http.StatusInternalServerError)
@@ -202,7 +202,7 @@ func (c *ApplicationsController) Delete(ctx *caesar.Context) error {
 }
 
 func (c *ApplicationsController) Update(ctx *caesar.Context) error {
-	// curl -X PATCH localhost:3000/user/update/ -H "Content-Type: application/json" -d '{"id": "1" , "name": "newname"}'
+	// curl -X PATCH localhost:3000/routeplaceholder/update/ -H "Content-Type: application/json" -d '{"id": "1" , "name": "newname"}'
 	var data struct {
 		ID   string ` + "`json:\"id\"`" + `
 		Name string ` + "`json:\"name\"`" + `
@@ -223,8 +223,13 @@ func (c *ApplicationsController) Update(ctx *caesar.Context) error {
 }
 
 `
+	// replace route path
+	controllerTemplate = strings.ReplaceAll(controllerTemplate, "routeplaceholder", strings.ToLower(controllerNameUpperCamel))
+	// replace app name
 	controllerTemplate = strings.ReplaceAll(controllerTemplate, "citadel", util.RetrieveModuleName())
+	// replace model name
 	controllerTemplate = strings.ReplaceAll(controllerTemplate, "MyModel", controllerNameUpperCamel+"Resource")
+	// replace controller + repository name
 	controllerTemplate = strings.ReplaceAll(controllerTemplate, "Applications", controllerNameUpperCamel+"Resources")
 	controllerTemplate = strings.ReplaceAll(controllerTemplate, "package controllers", "package "+packageName)
 
