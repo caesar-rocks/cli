@@ -1,8 +1,10 @@
 package main
 
 import (
-	"github.com/caesar-rocks/cli/internal/make"
-	"github.com/caesar-rocks/cli/util"
+	"os"
+
+	"github.com/caesar-rocks/cli/internal/tools"
+	"github.com/caesar-rocks/cli/util/inform"
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 )
@@ -20,10 +22,11 @@ var makeRepositoryCmd = &cobra.Command{
 			huh.NewInput().Title("Which model should we create a repository for, civis Romanus?").Value(&input).Run()
 		}
 
-		if err := make.MakeRepository(make.MakeRepositoryOpts{
+		wrapper := tools.NewToolsWrapper(os.Stdout)
+		if err := wrapper.MakeRepository(tools.MakeRepositoryOpts{
 			ModelName: input,
 		}); err != nil {
-			util.PrintWithPrefix("error", "#FF0000", err.Error())
+			inform.Inform(os.Stdout, inform.Error, err.Error())
 		}
 	},
 }

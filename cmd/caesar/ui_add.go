@@ -1,9 +1,10 @@
 package main
 
 import (
-	"fmt"
+	"os"
 
-	makeTools "github.com/caesar-rocks/cli/internal/make"
+	"github.com/caesar-rocks/cli/internal/tools"
+	"github.com/caesar-rocks/cli/internal/ui"
 	"github.com/caesar-rocks/cli/util"
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
@@ -19,7 +20,7 @@ var uiAddCmd = &cobra.Command{
 		if len(args) > 0 {
 			componentName = args[0]
 		} else {
-			uiComponents, err := makeTools.ListRemoteUIComponents()
+			uiComponents, err := ui.ListRemoteUIComponents()
 			if err == nil {
 				options := make([]huh.Option[string], len(uiComponents))
 				for i, c := range uiComponents {
@@ -39,13 +40,12 @@ var uiAddCmd = &cobra.Command{
 			}
 		}
 
-		if err := makeTools.AddUIComponent(makeTools.AddUIComponentOpts{
+		wrapper := tools.NewToolsWrapper(os.Stdout)
+		if err := wrapper.AddUIComponent(tools.AddUIComponentOpts{
 			ComponentName: componentName,
 		}); err != nil {
 			util.ExitWithError(err)
 		}
-
-		util.PrintWithPrefix("success", "#00c900", fmt.Sprintf("Component \"%s\" added successfully!", componentName))
 	},
 }
 

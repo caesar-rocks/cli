@@ -1,8 +1,10 @@
 package main
 
 import (
-	"github.com/caesar-rocks/cli/internal/make"
-	"github.com/caesar-rocks/cli/util"
+	"os"
+
+	"github.com/caesar-rocks/cli/internal/tools"
+	"github.com/caesar-rocks/cli/util/inform"
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 )
@@ -12,18 +14,35 @@ var makeModelCmd = &cobra.Command{
 	Short:   "Create a new model",
 	GroupID: "make",
 	Run: func(cmd *cobra.Command, args []string) {
-		var input string
+		var (
+			modelName      string
+			withRepository bool
+			withMigration  bool
+		)
 
 		if len(args) > 0 {
-			input = args[0]
+			modelName = args[0]
 		} else {
-			huh.NewInput().Title("How should we name your model, civis Romanus?").Value(&input).Run()
+			huh.NewInput().Title("How should we name your model, civis Romanus?").Value(&modelName).Run()
 		}
 
-		if err := make.MakeModel(make.MakeModelOpts{
-			ModelName: input,
+		huh.NewConfirm().
+			Title("Do you want to create a repository for this model?").
+			Value(&withRepository).
+			Run()
+
+		huh.NewConfirm().
+			Title("Do you want to create a migration for this model?").
+			Value(&withMigration).
+			Run()
+
+		wrapper := tools.NewToolsWrapper(os.Stdout)
+		if err := wrapper.MakeModel(tools.MakeModelOpts{
+			ModelName:      modelName,
+			WithRepository: withRepository,
+			WithMigration:  withMigration,
 		}); err != nil {
-			util.PrintWithPrefix("error", "#FF0000", err.Error())
+			inform.Inform(os.Stdout, inform.Error, err.Error())
 		}
 	},
 }

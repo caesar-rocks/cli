@@ -1,20 +1,17 @@
-package make
+package tools
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
-	"strings"
 
-	"github.com/caesar-rocks/cli/util"
+	"github.com/caesar-rocks/cli/util/inform"
 	"github.com/charmbracelet/huh"
 )
 
 const (
 	CAESAR_UI_GITHUB_RAW_BASE_URL = "https://raw.githubusercontent.com/caesar-rocks/ui/master"
-	CAESAR_UI_GITHUB_API_BASE_URL = "https://api.github.com/repos/caesar-rocks/ui/contents"
 
 	DEFAULT_CSS_PATH                = "./views/app.css"
 	DEFAULT_UI_COMPONENTS_BASE_PATH = "./views/ui"
@@ -24,19 +21,19 @@ type AddUIComponentOpts struct {
 	ComponentName string `description:"The name of the component you want to add to your codebase (lowercase, matching the .templ file name)"`
 }
 
-func AddUIComponent(opts AddUIComponentOpts) error {
-	componentContents, err := retrieveComponentContents(opts.ComponentName)
+func (wrapper *ToolsWrapper) AddUIComponent(opts AddUIComponentOpts) error {
+	componentContents, err := wrapper.retrieveComponentContents(opts.ComponentName)
 	if err != nil {
 		return err
 	}
 
-	if err = saveComponentContents(opts.ComponentName, componentContents); err != nil {
+	if err = wrapper.saveComponentContents(opts.ComponentName, componentContents); err != nil {
 		return err
 	}
 
-	componentStylesContents, err := retrieveComponentStyles(opts.ComponentName)
+	componentStylesContents, err := wrapper.retrieveComponentStyles(opts.ComponentName)
 	if err == nil {
-		if err := saveComponentStyles(componentStylesContents); err != nil {
+		if err := wrapper.saveComponentStyles(componentStylesContents); err != nil {
 			return err
 		}
 	}
@@ -44,7 +41,7 @@ func AddUIComponent(opts AddUIComponentOpts) error {
 	return nil
 }
 
-func retrieveComponentContents(componentName string) (string, error) {
+func (wrapper *ToolsWrapper) retrieveComponentContents(componentName string) (string, error) {
 	url := fmt.Sprintf("%s/%s.templ", CAESAR_UI_GITHUB_RAW_BASE_URL, componentName)
 
 	resp, err := http.Get(url)
@@ -65,7 +62,7 @@ func retrieveComponentContents(componentName string) (string, error) {
 	return string(componentContents), nil
 }
 
-func saveComponentContents(componentName string, contents string) error {
+func (wrapper *ToolsWrapper) saveComponentContents(componentName string, contents string) error {
 	uiComponentsBasePath := DEFAULT_UI_COMPONENTS_BASE_PATH
 	huh.NewInput().Title("In which folder would you save the component?").Value(&uiComponentsBasePath).Run()
 
@@ -79,12 +76,12 @@ func saveComponentContents(componentName string, contents string) error {
 		return err
 	}
 
-	util.PrintWithPrefix("created", "#6C757D", componentFilePath)
+	wrapper.Inform(inform.Info, fmt.Sprintf("created %s", componentFilePath))
 
 	return nil
 }
 
-func retrieveComponentStyles(componentName string) (string, error) {
+func (wrapper *ToolsWrapper) retrieveComponentStyles(componentName string) (string, error) {
 	url := fmt.Sprintf("%s/%s.css", CAESAR_UI_GITHUB_RAW_BASE_URL, componentName)
 
 	resp, err := http.Get(url)
@@ -105,7 +102,7 @@ func retrieveComponentStyles(componentName string) (string, error) {
 	return string(componentStylesContents), nil
 }
 
-func saveComponentStyles(contents string) error {
+func (wrapper *ToolsWrapper) saveComponentStyles(contents string) error {
 	cssPath := DEFAULT_CSS_PATH
 	huh.NewInput().Title("In which CSS file would you save the component styles?").Value(&cssPath).Run()
 
@@ -123,38 +120,7 @@ func saveComponentStyles(contents string) error {
 		return err
 	}
 
-	util.PrintWithPrefix("updated", "#6C757D", cssPath)
+	wrapper.Inform(inform.Updated, cssPath)
 
 	return nil
-}
-
-func ListRemoteUIComponents() ([]string, error) {
-	resp, err := http.Get(CAESAR_UI_GITHUB_API_BASE_URL)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("failed to retrieve UI components list")
-	}
-
-	var files []struct {
-		Name string `json:"name"`
-		Type string `json:"type"`
-	}
-
-	if err := json.NewDecoder(resp.Body).Decode(&files); err != nil {
-		return nil, err
-	}
-
-	var components []string
-	for _, file := range files {
-		if file.Type == "file" && strings.HasSuffix(file.Name, ".templ") {
-			componentName := strings.TrimSuffix(file.Name, ".templ")
-			components = append(components, componentName)
-		}
-	}
-
-	return components, nil
 }

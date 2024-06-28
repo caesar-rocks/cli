@@ -1,4 +1,4 @@
-package make
+package tools
 
 import (
 	"fmt"
@@ -7,13 +7,16 @@ import (
 	"strings"
 
 	"github.com/caesar-rocks/cli/util"
+	"github.com/caesar-rocks/cli/util/inform"
 )
 
 type MakeModelOpts struct {
-	ModelName string `description:"The name of the model to create"`
+	ModelName      string `description:"The name of the model to create"`
+	WithRepository bool   `description:"Whether to create a repository for the model"`
+	WithMigration  bool   `description:"Whether to create a migration for the model"`
 }
 
-func MakeModel(opts MakeModelOpts) error {
+func (wrapper *ToolsWrapper) MakeModel(opts MakeModelOpts) error {
 	modelNameCamelCase := opts.ModelName
 	modelNameSnakeCase := util.CamelToSnake(modelNameCamelCase)
 
@@ -67,7 +70,21 @@ func (m *%s) BeforeAppendModel(ctx context.Context, query bun.Query) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("Model created successfully at", modelFilePath)
+	wrapper.Inform(inform.Created, modelFilePath)
+
+	// Create the repository if requested
+	if opts.WithRepository {
+		return wrapper.MakeRepository(MakeRepositoryOpts{
+			ModelName: modelNameCamelCase,
+		})
+	}
+
+	// Create the migration if requested
+	if opts.WithMigration {
+		return wrapper.MakeMigration(MakeMigrationOpts{
+			MigrationName: modelNameCamelCase,
+		})
+	}
 
 	return nil
 }

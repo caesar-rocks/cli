@@ -1,8 +1,10 @@
 package main
 
 import (
-	"github.com/caesar-rocks/cli/internal/make"
-	"github.com/caesar-rocks/cli/util"
+	"os"
+
+	"github.com/caesar-rocks/cli/internal/tools"
+	"github.com/caesar-rocks/cli/util/inform"
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 )
@@ -19,10 +21,11 @@ var makeMigrationCmd = &cobra.Command{
 			huh.NewInput().Title("How is your migration named?").Value(&migrationName).Run()
 		}
 
-		if err := make.MakeMigration(make.MakeMigrationOpts{
+		wrapper := tools.NewToolsWrapper(os.Stdout)
+		if err := wrapper.MakeMigration(tools.MakeMigrationOpts{
 			MigrationName: migrationName,
 		}); err != nil {
-			util.PrintWithPrefix("error", "#FF0000", err.Error())
+			inform.Inform(os.Stdout, inform.Error, err.Error())
 		}
 	},
 }

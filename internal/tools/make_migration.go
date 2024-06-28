@@ -1,4 +1,4 @@
-package make
+package tools
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ type MakeMigrationOpts struct {
 	MigrationName string `description:"The name of the migration to create"`
 }
 
-func MakeMigration(opts MakeMigrationOpts) error {
+func (wrapper *ToolsWrapper) MakeMigration(opts MakeMigrationOpts) error {
 	migrationNameInSnakeCase := util.CamelToSnake(opts.MigrationName)
 
 	timestamp := time.Now().Unix()
