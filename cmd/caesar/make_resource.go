@@ -1,8 +1,10 @@
 package main
 
 import (
-	"github.com/caesar-rocks/cli/internal/make"
-	"github.com/caesar-rocks/cli/util"
+	"os"
+
+	"github.com/caesar-rocks/cli/internal/tools"
+	"github.com/caesar-rocks/cli/util/inform"
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 )
@@ -19,18 +21,19 @@ var makeResourceCmd = &cobra.Command{
 		} else {
 			huh.NewInput().Title("How should we name your resource, civis Romanus?").Value(&input).Run()
 		}
+		wrapper := tools.NewToolsWrapper(os.Stdout)
 
-		if err := make.MakeRepository(make.MakeRepositoryOpts{
+		if err := wrapper.MakeRepository(tools.MakeRepositoryOpts{
 			ModelName: input + "Resources",
 		}); err != nil {
-			util.PrintWithPrefix("error", "#FF0000", err.Error())
+			inform.Inform(os.Stdout, inform.Error, err.Error())
 		}
 
-		if err := make.MakeController(make.MakeControllerOpts{
+		if err := wrapper.MakeController(tools.MakeControllerOpts{
 			Input:    input,
 			Resource: true,
 		}); err != nil {
-			util.PrintWithPrefix("error", "#FF0000", err.Error())
+			inform.Inform(os.Stdout, inform.Error, err.Error())
 		}
 	},
 }
