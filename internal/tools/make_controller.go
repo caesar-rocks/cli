@@ -11,7 +11,7 @@ import (
 
 type MakeControllerOpts struct {
 	Input    string `description:"The name of the controller to create"`
-	Resource bool   `description:"Whether or not this controller should be built with base resource"`
+	Resource bool   `description:"Whether or not this controller should be built as a base resource controller"`
 }
 
 func (wrapper *ToolsWrapper) MakeController(opts MakeControllerOpts) error {
